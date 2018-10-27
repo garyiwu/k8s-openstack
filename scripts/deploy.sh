@@ -100,19 +100,8 @@ set -x
 
 SSH_KEY=~/.ssh/onap_key
 
-source $WORKSPACE/test/ete/scripts/install_openstack_cli.sh
-
-SO_ENCRYPTION_KEY=aa3871669d893c7fb8abbcda31b88b4f
-export OS_PASSWORD_ENCRYPTED=$(echo -n "$OS_PASSWORD" | openssl aes-128-ecb -e -K "$SO_ENCRYPTION_KEY" -nosalt | xxd -c 256 -p)
-
 for n in $(seq 1 5); do
-    if [ $full_deletion = true ] ; then
-        $WORKSPACE/test/ete/scripts/teardown-onap.sh -n $stack_name -q
-    else
-        $WORKSPACE/test/ete/scripts/teardown-onap.sh -n $stack_name
-    fi
-
-    cd $WORKSPACE/deployment/heat/onap-oom
+    cd $WORKSPACE
     envsubst < $ENV_FILE > $ENV_FILE~
     if [ -z "$vm_num" ]; then
         cp onap-oom.yaml onap-oom.yaml~

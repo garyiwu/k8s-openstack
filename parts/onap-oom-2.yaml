@@ -32,5 +32,5 @@
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: ${ENTRYPOINT}
 
