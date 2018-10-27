@@ -31,6 +31,7 @@
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: '$HOST_LABEL'
           template:
-            get_file: ${VM_TYPE}_vm_entrypoint.sh
+            get_file: k8s_vm_entrypoint.sh
 

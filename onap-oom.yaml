@@ -250,6 +250,7 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'compute'
           template:
             get_file: k8s_vm_entrypoint.sh
 
@@ -286,6 +287,7 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'compute'
           template:
             get_file: k8s_vm_entrypoint.sh
 
@@ -322,6 +324,7 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'compute'
           template:
             get_file: k8s_vm_entrypoint.sh
 
@@ -358,8 +361,9 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'etcd'
           template:
-            get_file: etcd_vm_entrypoint.sh
+            get_file: k8s_vm_entrypoint.sh
 
   etcd_2_private_port:
     type: OS::Neutron::Port
@@ -394,8 +398,9 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'etcd'
           template:
-            get_file: etcd_vm_entrypoint.sh
+            get_file: k8s_vm_entrypoint.sh
 
   etcd_3_private_port:
     type: OS::Neutron::Port
@@ -430,8 +435,9 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'etcd'
           template:
-            get_file: etcd_vm_entrypoint.sh
+            get_file: k8s_vm_entrypoint.sh
 
   orch_1_private_port:
     type: OS::Neutron::Port
@@ -466,8 +472,9 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'orchestration'
           template:
-            get_file: orch_vm_entrypoint.sh
+            get_file: k8s_vm_entrypoint.sh
 
   orch_2_private_port:
     type: OS::Neutron::Port
@@ -502,8 +509,9 @@ resources:
             __docker_version__: { get_param: docker_version }
             __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
+            __host_label__: 'orchestration'
           template:
-            get_file: orch_vm_entrypoint.sh
+            get_file: k8s_vm_entrypoint.sh
 
 outputs:
   rancher_vm_ip:

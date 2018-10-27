@@ -57,5 +57,9 @@ done
 
 cd ~
 cp /dockerdata-nfs/rancher_agent_cmd.sh .
-sed -i "s/docker run/docker run -e CATTLE_HOST_LABELS='compute=true' -e CATTLE_AGENT_IP=${HOST_IP}/g" rancher_agent_cmd.sh
+sed -i "s/docker run/docker run -e CATTLE_HOST_LABELS='__host_label__=true' -e CATTLE_AGENT_IP=${HOST_IP}/g" rancher_agent_cmd.sh
 source rancher_agent_cmd.sh
+sleep 1m
+
+apt-get dist-upgrade
+reboot
