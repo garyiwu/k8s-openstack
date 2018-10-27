@@ -28,6 +28,14 @@ parameters:
     type: string
     description: VM flavor for k8s hosts
 
+  etcd_vm_flavor:
+    type: string
+    description: VM flavor for etcd hosts
+
+  orch_vm_flavor:
+    type: string
+    description: VM flavor for orch hosts
+
   integration_override_yaml:
     type: string
     description: Content for integration_override.yaml

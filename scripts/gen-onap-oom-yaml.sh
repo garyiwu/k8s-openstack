@@ -93,15 +93,15 @@ cat <<EOF
 EOF
 
 for VM_NUM in $(seq $NUM_K8S_VMS); do
-    K8S_VM_NAME=k8s_$VM_NUM ENTRYPOINT=k8s_vm_entrypoint.sh envsubst < $PARTS_DIR/onap-oom-2.yaml
+    VM_TYPE=k8s VM_NUM=$VM_NUM envsubst < $PARTS_DIR/onap-oom-2.yaml
 done
 
-for VM_NUM in $(seq 1 3); do
-    K8S_VM_NAME=etcd_$VM_NUM ENTRYPOINT=etcd_vm_entrypoint.sh envsubst < $PARTS_DIR/onap-oom-2.yaml
+for VM_NUM in $(seq 3); do
+    VM_TYPE=etcd VM_NUM=$VM_NUM envsubst < $PARTS_DIR/onap-oom-2.yaml
 done
 
-for VM_NUM in $(seq 1 2); do
-    K8S_VM_NAME=orch_$VM_NUM ENTRYPOINT=orch_vm_entrypoint.sh envsubst < $PARTS_DIR/onap-oom-2.yaml
+for VM_NUM in $(seq 2); do
+    VM_TYPE=orch VM_NUM=$VM_NUM envsubst < $PARTS_DIR/onap-oom-2.yaml
 done
 
 

@@ -31,6 +31,14 @@ parameters:
     type: string
     description: VM flavor for k8s hosts
 
+  etcd_vm_flavor:
+    type: string
+    description: VM flavor for etcd hosts
+
+  orch_vm_flavor:
+    type: string
+    description: VM flavor for orch hosts
+
   integration_override_yaml:
     type: string
     description: Content for integration_override.yaml
@@ -203,15 +211,11 @@ resources:
               get_attr: [k8s_1_floating_ip, floating_ip_address],
               get_attr: [k8s_2_floating_ip, floating_ip_address],
               get_attr: [k8s_3_floating_ip, floating_ip_address],
-              get_attr: [k8s_4_floating_ip, floating_ip_address],
-              get_attr: [k8s_5_floating_ip, floating_ip_address],
             ]
             __k8s_private_ips__: [
               get_attr: [k8s_1_floating_ip, fixed_ip_address],
               get_attr: [k8s_2_floating_ip, fixed_ip_address],
               get_attr: [k8s_3_floating_ip, fixed_ip_address],
-              get_attr: [k8s_4_floating_ip, fixed_ip_address],
-              get_attr: [k8s_5_floating_ip, fixed_ip_address],
             ]
   k8s_1_private_port:
     type: OS::Neutron::Port
@@ -231,7 +235,7 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s_1']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s', '1' ] ]
       image: { get_param: ubuntu_1604_image }
       flavor: { get_param: k8s_vm_flavor }
       key_name: { get_param: key_name }
@@ -267,7 +271,7 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s_2']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s', '2' ] ]
       image: { get_param: ubuntu_1604_image }
       flavor: { get_param: k8s_vm_flavor }
       key_name: { get_param: key_name }
@@ -303,84 +307,12 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s_3']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s', '3' ] ]
       image: { get_param: ubuntu_1604_image }
       flavor: { get_param: k8s_vm_flavor }
       key_name: { get_param: key_name }
       networks:
       - port: { get_resource: k8s_3_private_port }
-      user_data_format: RAW
-      user_data:
-        str_replace:
-          params:
-            __docker_proxy__: { get_param: docker_proxy }
-            __apt_proxy__: { get_param: apt_proxy }
-            __docker_version__: { get_param: docker_version }
-            __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
-            __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
-          template:
-            get_file: k8s_vm_entrypoint.sh
-
-  k8s_4_private_port:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_resource: oam_network }
-      fixed_ips: [{"subnet": { get_resource: oam_subnet }}]
-      security_groups:
-      - { get_resource: onap_sg }
-
-  k8s_4_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network_id: { get_param: public_net_id }
-      port_id: { get_resource: k8s_4_private_port }
-
-  k8s_4_vm:
-    type: OS::Nova::Server
-    properties:
-      name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s_4']]
-      image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
-      key_name: { get_param: key_name }
-      networks:
-      - port: { get_resource: k8s_4_private_port }
-      user_data_format: RAW
-      user_data:
-        str_replace:
-          params:
-            __docker_proxy__: { get_param: docker_proxy }
-            __apt_proxy__: { get_param: apt_proxy }
-            __docker_version__: { get_param: docker_version }
-            __rancher_ip_addr__: { get_attr: [rancher_floating_ip, floating_ip_address] }
-            __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
-          template:
-            get_file: k8s_vm_entrypoint.sh
-
-  k8s_5_private_port:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_resource: oam_network }
-      fixed_ips: [{"subnet": { get_resource: oam_subnet }}]
-      security_groups:
-      - { get_resource: onap_sg }
-
-  k8s_5_floating_ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network_id: { get_param: public_net_id }
-      port_id: { get_resource: k8s_5_private_port }
-
-  k8s_5_vm:
-    type: OS::Nova::Server
-    properties:
-      name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'k8s_5']]
-      image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
-      key_name: { get_param: key_name }
-      networks:
-      - port: { get_resource: k8s_5_private_port }
       user_data_format: RAW
       user_data:
         str_replace:
@@ -411,9 +343,9 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'etcd_1']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'etcd', '1' ] ]
       image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
+      flavor: { get_param: etcd_vm_flavor }
       key_name: { get_param: key_name }
       networks:
       - port: { get_resource: etcd_1_private_port }
@@ -447,9 +379,9 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'etcd_2']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'etcd', '2' ] ]
       image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
+      flavor: { get_param: etcd_vm_flavor }
       key_name: { get_param: key_name }
       networks:
       - port: { get_resource: etcd_2_private_port }
@@ -483,9 +415,9 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'etcd_3']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'etcd', '3' ] ]
       image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
+      flavor: { get_param: etcd_vm_flavor }
       key_name: { get_param: key_name }
       networks:
       - port: { get_resource: etcd_3_private_port }
@@ -519,9 +451,9 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'orch_1']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'orch', '1' ] ]
       image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
+      flavor: { get_param: orch_vm_flavor }
       key_name: { get_param: key_name }
       networks:
       - port: { get_resource: orch_1_private_port }
@@ -555,9 +487,9 @@ resources:
     type: OS::Nova::Server
     properties:
       name:
-        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'orch_2']]
+        list_join: ['-', [ { get_param: 'OS::stack_name' }, 'orch', '2' ] ]
       image: { get_param: ubuntu_1604_image }
-      flavor: { get_param: k8s_vm_flavor }
+      flavor: { get_param: orch_vm_flavor }
       key_name: { get_param: key_name }
       networks:
       - port: { get_resource: orch_2_private_port }
@@ -589,12 +521,4 @@ outputs:
   k8s_3_vm_ip:
     description: The IP address of the k8s_3 instance
     value: { get_attr: [k8s_3_floating_ip, floating_ip_address] }
-
-  k8s_4_vm_ip:
-    description: The IP address of the k8s_4 instance
-    value: { get_attr: [k8s_4_floating_ip, floating_ip_address] }
-
-  k8s_5_vm_ip:
-    description: The IP address of the k8s_5 instance
-    value: { get_attr: [k8s_5_floating_ip, floating_ip_address] }
 
