@@ -99,7 +99,7 @@ done
 apt-mark hold docker-ce
 
 # install rancher __rancher_version__
-docker run --restart unless-stopped -d -p 8080:8080  -e CATTLE_BOOTSTRAP_REQUIRED_IMAGE=__docker_proxy__/rancher/agent:v__rancher_agent_version__ __docker_proxy__/rancher/server:v__rancher_version__
+docker run --restart unless-stopped -d -p 8080:8080  -e CATTLE_BOOTSTRAP_REQUIRED_IMAGE=__docker_proxy__/rancher/agent:v__rancher_agent_version__ __docker_proxy__/rancher/server:v__rancher_version__ rancher-server
 
 # install kubectl __kubectl_version__
 curl -s -LO https://storage.googleapis.com/kubernetes-release/release/v__kubectl_version__/bin/linux/amd64/kubectl
@@ -140,7 +140,7 @@ curl -s -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" \
 -X PUT \
 -H 'Accept: application/json' \
 -H 'Content-Type: application/json' \
--d '{"stacks":[{"type":"catalogTemplate", "answers":{"CONSTRAINT_TYPE":"required"}, "name":"kubernetes", "templateVersionId":"library:infra*k8s:47"}, {"type":"catalogTemplate", "name":"network-services", "templateId":"library:infra*network-services"}, {"type":"catalogTemplate", "name":"ipsec", "templateId":"library:infra*ipsec"}, {"type":"catalogTemplate", "name":"healthcheck", "templateId":"library:infra*healthcheck"}]}' \
+-d '{"stacks":[{"type":"catalogTemplate", "answers":{"CONSTRAINT_TYPE":"required"}, "name":"kubernetes", templateId": "library:infra*k8s"}, {"type":"catalogTemplate", "name":"network-services", "templateId":"library:infra*network-services"}, {"type":"catalogTemplate", "name":"ipsec", "templateId":"library:infra*ipsec"}, {"type":"catalogTemplate", "name":"healthcheck", "templateId":"library:infra*healthcheck"}]}' \
 "http://$RANCHER_IP:8080/v2-beta/projecttemplates/$TEMPLATE_ID"
 
 
@@ -176,6 +176,13 @@ cd /dockerdata-nfs
 git add -A
 git commit -a -m "Add rancher agent command file"
 cd ~
+
+
+cp /dockerdata-nfs/rancher_agent_cmd.sh .
+sed -i "s/docker run/docker run -e CATTLE_HOST_LABELS='orchestration=true' -e CATTLE_AGENT_IP=${HOST_IP}/g" rancher_agent_cmd.sh
+source rancher_agent_cmd.sh
+
+
 
 
 KUBETOKEN=$(echo -n 'Basic '$(echo -n "$CATTLE_ACCESS_KEY:$CATTLE_SECRET_KEY" | base64 -w 0) | base64 -w 0)
