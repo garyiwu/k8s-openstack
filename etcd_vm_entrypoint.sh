@@ -48,6 +48,7 @@ while ! hash docker &> /dev/null; do
     usermod -aG docker ubuntu
     sleep 10
 done
+apt-mark hold docker-ce
 
 while [ ! -e /dockerdata-nfs/rancher_agent_cmd.sh ]; do
     mount /dockerdata-nfs

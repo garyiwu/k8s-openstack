@@ -96,6 +96,7 @@ while ! hash docker &> /dev/null; do
     usermod -aG docker ubuntu
     sleep 10
 done
+apt-mark hold docker-ce
 
 # install rancher __rancher_version__
 docker run --restart unless-stopped -d -p 8080:8080  -e CATTLE_BOOTSTRAP_REQUIRED_IMAGE=__docker_proxy__/rancher/agent:v__rancher_agent_version__ __docker_proxy__/rancher/server:v__rancher_version__
