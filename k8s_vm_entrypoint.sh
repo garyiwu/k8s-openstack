@@ -38,7 +38,8 @@ echo "__rancher_private_ip_addr__:/dockerdata-nfs /dockerdata-nfs nfs noauto,noa
 
 while ! hash jq &> /dev/null; do
     apt-get -y update
-    apt-get -y install linux-image-extra-$(uname -r) jq nfs-common
+    apt-get -y dist-upgrade
+    apt-get -y install linux-image-extra-$(uname -r) apt-transport-https ca-certificates curl software-properties-common jq nfs-common
     sleep 10
 done
 
@@ -61,5 +62,4 @@ sed -i "s/docker run/docker run -e CATTLE_HOST_LABELS='__host_label__=true' -e C
 source rancher_agent_cmd.sh
 sleep 1m
 
-apt-get dist-upgrade
 reboot

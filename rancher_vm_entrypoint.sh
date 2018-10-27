@@ -62,7 +62,7 @@ fi
 
 while ! hash jq &> /dev/null; do
     apt-get -y update
-    apt-get -y install linux-image-extra-$(uname -r) jq make nfs-kernel-server moreutils
+    apt-get -y install linux-image-extra-$(uname -r) apt-transport-https ca-certificates curl software-properties-common jq make nfs-kernel-server moreutils
     sleep 10
 done
 
@@ -99,7 +99,7 @@ done
 apt-mark hold docker-ce
 
 # install rancher __rancher_version__
-docker run --restart unless-stopped -d -p 8080:8080  -e CATTLE_BOOTSTRAP_REQUIRED_IMAGE=__docker_proxy__/rancher/agent:v__rancher_agent_version__ __docker_proxy__/rancher/server:v__rancher_version__ rancher-server
+docker run --name rancher-server --restart unless-stopped -d -p 8080:8080 -e CATTLE_BOOTSTRAP_REQUIRED_IMAGE=__docker_proxy__/rancher/agent:v__rancher_agent_version__ __docker_proxy__/rancher/server:v__rancher_version__
 
 # install kubectl __kubectl_version__
 curl -s -LO https://storage.googleapis.com/kubernetes-release/release/v__kubectl_version__/bin/linux/amd64/kubectl

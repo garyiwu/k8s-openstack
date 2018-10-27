@@ -145,28 +145,4 @@ ssh-keygen -R $RANCHER_IP
 sleep 2m
 ssh -o StrictHostKeychecking=no -i $SSH_KEY ubuntu@$RANCHER_IP "sed -u '/Cloud-init.*finished/q' <(tail -n+0 -f /var/log/cloud-init-output.log)"
 
-for n in $(seq 1 8); do
-    echo "Wait count $n of 8"
-    sleep 15m
-    ssh -i $SSH_KEY ubuntu@$RANCHER_IP  'sudo su -l root -c "/root/oom/kubernetes/robot/ete-k8s.sh onap health"'
-    RESULT=$?
-    if [ $RESULT -eq 0 ]; then
-  	break
-    fi
-done
-ROBOT_POD=$(ssh -i $SSH_KEY ubuntu@$RANCHER_IP 'sudo su -c "kubectl --namespace onap get pods"' | grep robot | sed 's/ .*//')
-if [ "$ROBOT_POD" == "" ]; then
-    exit 1
-fi
-
-LOG_DIR=$(echo "kubectl exec -n onap $ROBOT_POD -- ls -1t /share/logs | grep health | head -1" | ssh -i $SSH_KEY ubuntu@$RANCHER_IP sudo su)
-if [ "$LOG_DIR" == "" ]; then
-    exit 1
-fi
-
-echo "kubectl cp -n onap $ROBOT_POD:share/logs/$LOG_DIR /tmp/robot/logs/$LOG_DIR" | ssh -i $SSH_KEY ubuntu@$RANCHER_IP sudo su
-rsync -e "ssh -i $SSH_KEY" -avtz ubuntu@$RANCHER_IP:/tmp/robot/logs/$LOG_DIR/ $WORKSPACE/archives/
-
-echo "Browse Robot results at http://$K8S_IP:30209/logs/$LOG_DIR/"
-
 exit 0
