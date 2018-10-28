@@ -136,6 +136,15 @@ until [ ! -z "$TEMPLATE_ID" ] && [ "$TEMPLATE_ID" != "null" ]; do
     TEMPLATE_ID=$(jq -r '.data[0].id' projectTemplatesKubernetes.json)
 done
 
+
+# rancher 1.6.18 k8s templateVersionIds
+#   v1.8.10-rancher1-1: library:infra*k8s:43
+#   v1.9.5-rancher1-3: library:infra*k8s:46
+#   v1.10.3-rancher1-1: library:infra*k8s:47
+
+# rancher 1.6.22 k8s templateVersionIds
+#   v1.11.2-rancher1-2: library:infra*k8s:52
+
 curl -s -u "${CATTLE_ACCESS_KEY}:${CATTLE_SECRET_KEY}" \
 -X PUT \
 -H 'Accept: application/json' \
@@ -176,13 +185,6 @@ cd /dockerdata-nfs
 git add -A
 git commit -a -m "Add rancher agent command file"
 cd ~
-
-
-cp /dockerdata-nfs/rancher_agent_cmd.sh .
-sed -i "s/docker run/docker run -e CATTLE_HOST_LABELS='orchestration=true' -e CATTLE_AGENT_IP=${HOST_IP}/g" rancher_agent_cmd.sh
-source rancher_agent_cmd.sh
-
-
 
 
 KUBETOKEN=$(echo -n 'Basic '$(echo -n "$CATTLE_ACCESS_KEY:$CATTLE_SECRET_KEY" | base64 -w 0) | base64 -w 0)
