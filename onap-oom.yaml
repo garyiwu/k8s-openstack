@@ -252,7 +252,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'compute'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   k8s_2_private_port:
     type: OS::Neutron::Port
@@ -289,7 +289,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'compute'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   k8s_3_private_port:
     type: OS::Neutron::Port
@@ -326,7 +326,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'compute'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   etcd_1_private_port:
     type: OS::Neutron::Port
@@ -363,7 +363,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'etcd'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   etcd_2_private_port:
     type: OS::Neutron::Port
@@ -400,7 +400,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'etcd'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   etcd_3_private_port:
     type: OS::Neutron::Port
@@ -437,7 +437,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'etcd'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   orch_1_private_port:
     type: OS::Neutron::Port
@@ -474,7 +474,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'orchestration'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
   orch_2_private_port:
     type: OS::Neutron::Port
@@ -511,7 +511,7 @@ resources:
             __rancher_private_ip_addr__: { get_attr: [rancher_floating_ip, fixed_ip_address] }
             __host_label__: 'orchestration'
           template:
-            get_file: k8s_vm_entrypoint.sh
+            get_file: k8s_vm_config.yaml
 
 outputs:
   rancher_vm_ip:

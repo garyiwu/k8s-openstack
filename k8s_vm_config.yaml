@@ -1,0 +1,65 @@
+#cloud-config
+apt:
+  http_proxy: http://__apt_proxy__/
+package_update: true
+package_upgrade: true
+packages:
+- apt-transport-https
+- ca-certificates
+- curl
+- software-properties-common
+- jq
+- nfs-common
+power_state:
+  delay: "+1"
+  mode: reboot
+write_files:
+- path: /opt/k8s_vm_entrypoint.sh
+  permissions: '0755'
+  content: |
+    #!/bin/bash -x
+
+    export DEBIAN_FRONTEND=noninteractive
+    printenv
+
+    mkdir -p /opt/config
+    echo "__docker_version__" > /opt/config/docker_version.txt
+    echo "__rancher_ip_addr__" > /opt/config/rancher_ip_addr.txt
+    echo "__rancher_private_ip_addr__" > /opt/config/rancher_private_ip_addr.txt
+    HOST_IP=$(hostname -I)
+    echo $HOST_IP `hostname` >> /etc/hosts
+
+    mkdir -p /etc/docker
+    if [ ! -z "__docker_proxy__" ]; then
+        cat > /etc/docker/daemon.json <<EOF
+    {
+      "insecure-registries" : ["__docker_proxy__"]
+    }
+    EOF
+    fi
+
+    # apt-get -y install linux-image-extra-$(uname -r)
+
+    # install docker 17.03
+    while ! hash docker &> /dev/null; do
+        curl -s https://releases.rancher.com/install-docker/__docker_version__.sh | sh
+        usermod -aG docker ubuntu
+        sleep 10
+    done
+    apt-mark hold docker-ce
+
+    mkdir -p /dockerdata-nfs
+    echo "__rancher_private_ip_addr__:/dockerdata-nfs /dockerdata-nfs nfs noauto,noatime,fg,retry=1,x-systemd.automount,_netdev,soft,nolock,intr,tcp,actimeo=1800 0 0" | tee -a /etc/fstab
+
+    while [ ! -e /dockerdata-nfs/rancher_agent_cmd.sh ]; do
+        mount /dockerdata-nfs
+        sleep 10
+    done
+
+    cd ~
+    cp /dockerdata-nfs/rancher_agent_cmd.sh .
+    sed -i "s/docker run/docker run -e CATTLE_HOST_LABELS='__host_label__=true' -e CATTLE_AGENT_IP=${HOST_IP}/g" rancher_agent_cmd.sh
+    source rancher_agent_cmd.sh
+
+runcmd:
+- /opt/k8s_vm_entrypoint.sh
